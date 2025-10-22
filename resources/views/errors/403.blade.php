@@ -1,0 +1,21 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="min-h-[60vh] flex items-center justify-center px-4">
+    <div class="text-center">
+        <div class="mb-8">
+            <i class="fa-solid fa-lock text-9xl text-red-700 mb-4"></i>
+        </div>
+        <h1 class="text-6xl font-bold text-gray-800 mb-4">403</h1>
+        <h2 class="text-3xl font-semibold text-gray-700 mb-4">Acesso Negado</h2>
+        <p class="text-gray-600 mb-8 max-w-md mx-auto">
+            Não tens permissão para aceder a esta página.
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap">
+            <a href="{{ route('home') }}" class="bg-red-700 text-white px-6 py-3 rounded-lg hover:bg-red-800 transition font-semibold">
+                <i class="fa-solid fa-house"></i> Voltar ao Início
+            </a>
+        </div>
+    </div>
+</div>
+@endsection

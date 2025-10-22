@@ -37,7 +37,15 @@ class BackofficeController extends Controller
             'nome' => 'required|string|max:255',
             'descricao' => 'nullable|string',
             'preco' => 'required|numeric|min:0',
-            'imagem' => 'nullable|image|max:2048',
+            'imagem' => 'nullable|image|max:5120',
+        ], [
+            'nome.required' => 'O nome do produto é obrigatório.',
+            'nome.max' => 'O nome não pode ter mais de 255 caracteres.',
+            'preco.required' => 'O preço é obrigatório.',
+            'preco.numeric' => 'O preço deve ser um número.',
+            'preco.min' => 'O preço não pode ser negativo.',
+            'imagem.image' => 'O ficheiro deve ser uma imagem.',
+            'imagem.max' => 'A imagem não pode ser maior que 5MB.',
         ]);
 
         $path = $request->file('imagem')?->store('produtos', 'public');
