@@ -45,9 +45,9 @@
                         </style>
 
                         <script>
-                            (function(){
+                            document.addEventListener('DOMContentLoaded', function(){
                                 const rows = document.querySelectorAll('#payment-list .payment-row');
-                                const extras = document.querySelectorAll('#payment-extras .payment-extra');
+                                const extras = document.querySelectorAll('.payment-inline');
 
                                 function selectValue(val){
                                     rows.forEach(r=>{
@@ -66,30 +66,22 @@
                                             e.style.display = (e.dataset.for === val) ? '' : 'none';
                                         });
 
-                                        // if multibanco selected, generate a reference and set hidden input
-                                        if(val === 'multibanco'){
-                                            const refEl = document.getElementById('mb-ref');
-                                            const inputEl = document.getElementById('multibanco_reference_input');
-                                            if(refEl && inputEl){
-                                                // simple simulated reference: 9 digits grouped AAA-BBB-CCC
-                                                const rnd = () => Math.floor(Math.random()*900)+100;
-                                                const ref = `${rnd()}${rnd()}${rnd()}`.slice(0,9);
-                                                const formatted = ref.slice(0,3)+" "+ref.slice(3,6)+" "+ref.slice(6);
-                                                refEl.textContent = formatted;
-                                                inputEl.value = ref;
-                                            }
-                                        }
+                                        // no special generation for multibanco now; it uses card fields per request
                                 }
 
                                 rows.forEach(r=>{
                                     r.addEventListener('click', ()=> selectValue(r.dataset.value));
+                                    const input = r.querySelector('input[type=radio]');
+                                    if(input){
+                                        input.addEventListener('change', ()=> selectValue(input.value));
+                                    }
                                 });
 
                                 // initialize from any checked radio or default to first
                                 const checked = document.querySelector('#payment-list input[type=radio]:checked');
                                 const initial = checked ? checked.value : (rows[0] ? rows[0].dataset.value : null);
                                 if(initial) selectValue(initial);
-                            })();
+                            });
                         </script>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Código postal</label>
@@ -115,11 +107,20 @@
                                         <img src="{{ asset('images/payments/multibanco.svg') }}" alt="Multibanco" class="w-10 h-6" />
                                         <div class="font-medium">Multibanco</div>
                                     </div>
-                                    <input type="radio" name="payment_method" value="multibanco" class="hidden" {{ old('payment_method') == 'multibanco' ? 'checked' : '' }}>
+                                    <input type="radio" name="payment_method" value="multibanco" class="form-radio h-4 w-4 text-indigo-600" {{ old('payment_method') == 'multibanco' ? 'checked' : '' }}>
                                     <span class="check-badge hidden w-7 h-7 rounded-full flex items-center justify-center bg-indigo-600 text-white">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
                                 </label>
+
+                                <div class="payment-inline mt-2 p-3 border rounded bg-gray-50" data-for="multibanco" style="display:none">
+                                    <label class="block text-sm font-medium text-gray-700">Número do cartão</label>
+                                    <input type="text" name="multibanco_card_number" placeholder="**** **** **** 4242" class="mt-1 block w-full border rounded p-2 mb-2">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <input type="text" name="multibanco_card_expiry" placeholder="MM/AA" class="mt-1 block w-full border rounded p-2">
+                                        <input type="text" name="multibanco_card_cvc" placeholder="CVC" class="mt-1 block w-full border rounded p-2">
+                                    </div>
+                                </div>
 
                                 <!-- MB WAY -->
                                 <label class="payment-row relative flex items-center justify-between gap-4 p-3 border rounded cursor-pointer bg-white" data-value="mbway">
@@ -127,11 +128,17 @@
                                         <img src="{{ asset('images/payments/mbway.svg') }}" alt="MB WAY" class="w-10 h-6" />
                                         <div class="font-medium">MB WAY</div>
                                     </div>
-                                    <input type="radio" name="payment_method" value="mbway" class="hidden" {{ old('payment_method') == 'mbway' ? 'checked' : '' }}>
+                                    <input type="radio" name="payment_method" value="mbway" class="form-radio h-4 w-4 text-indigo-600" {{ old('payment_method') == 'mbway' ? 'checked' : '' }}>
                                     <span class="check-badge hidden w-7 h-7 rounded-full flex items-center justify-center bg-indigo-600 text-white">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
                                 </label>
+
+                                <div class="payment-inline mt-2 p-3 border rounded bg-gray-50" data-for="mbway" style="display:none">
+                                    <label class="block text-sm font-medium text-gray-700">Telemóvel (MB WAY)</label>
+                                    <input type="text" name="mbway_phone" placeholder="912345678" class="mt-1 block w-full border rounded p-2">
+                                    <div class="text-xs text-gray-500 mt-2">Iremos enviar uma notificação simulada para este número.</div>
+                                </div>
 
                                 <!-- Paysafecard -->
                                 <label class="payment-row relative flex items-center justify-between gap-4 p-3 border rounded cursor-pointer bg-white" data-value="paysafecard">
@@ -139,11 +146,16 @@
                                         <img src="{{ asset('images/payments/paysafecard.svg') }}" alt="Paysafecard" class="w-10 h-6" />
                                         <div class="font-medium">Paysafecard</div>
                                     </div>
-                                    <input type="radio" name="payment_method" value="paysafecard" class="hidden" {{ old('payment_method') == 'paysafecard' ? 'checked' : '' }}>
+                                    <input type="radio" name="payment_method" value="paysafecard" class="form-radio h-4 w-4 text-indigo-600" {{ old('payment_method') == 'paysafecard' ? 'checked' : '' }}>
                                     <span class="check-badge hidden w-7 h-7 rounded-full flex items-center justify-center bg-indigo-600 text-white">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
                                 </label>
+
+                                <div class="payment-inline mt-2 p-3 border rounded bg-gray-50" data-for="paysafecard" style="display:none">
+                                    <label class="block text-sm font-medium text-gray-700">Email (Paysafecard)</label>
+                                    <input type="email" name="paysafecard_email" placeholder="you@example.com" class="mt-1 block w-full border rounded p-2">
+                                </div>
 
                                 <!-- PayPal -->
                                 <label class="payment-row relative flex items-center justify-between gap-4 p-3 border rounded cursor-pointer bg-white" data-value="paypal">
@@ -151,36 +163,17 @@
                                         <img src="{{ asset('images/payments/paypal.svg') }}" alt="PayPal" class="w-10 h-6" />
                                         <div class="font-medium">PayPal</div>
                                     </div>
-                                    <input type="radio" name="payment_method" value="paypal" class="hidden" {{ old('payment_method') == 'paypal' ? 'checked' : '' }}>
+                                    <input type="radio" name="payment_method" value="paypal" class="form-radio h-4 w-4 text-indigo-600" {{ old('payment_method') == 'paypal' ? 'checked' : '' }}>
                                     <span class="check-badge hidden w-7 h-7 rounded-full flex items-center justify-center bg-indigo-600 text-white">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
                                 </label>
-                            </div>
 
-                            <div id="payment-extras" class="mt-4">
-                                <div class="payment-extra" data-for="multibanco" style="display:none">
-                                    <div class="text-sm text-gray-700 font-medium mb-2">Referência Multibanco (simulada)</div>
-                                    <div id="mb-ref" class="p-3 border rounded bg-gray-50 text-sm text-gray-700 font-mono">GERANDO...</div>
-                                    <input type="hidden" name="multibanco_reference" id="multibanco_reference_input" value="">
-                                </div>
-
-                                <div class="payment-extra" data-for="mbway" style="display:none">
-                                    <label class="block text-sm font-medium text-gray-700">Telemóvel (MB WAY)</label>
-                                    <input type="text" name="mbway_phone" placeholder="912345678" class="mt-1 block w-full border rounded p-2">
-                                    <div class="text-xs text-gray-500 mt-2">Iremos enviar uma notificação simulada para este número.</div>
-                                </div>
-
-                                <div class="payment-extra" data-for="paysafecard" style="display:none">
-                                    <label class="block text-sm font-medium text-gray-700">Código Paysafecard</label>
-                                    <input type="text" name="paysafecard_code" placeholder="XXXX-XXXX-XXXX" class="mt-1 block w-full border rounded p-2">
-                                </div>
-
-                                <div class="payment-extra" data-for="paypal" style="display:none">
+                                <div class="payment-inline mt-2 p-3 border rounded bg-gray-50" data-for="paypal" style="display:none">
                                     <label class="block text-sm font-medium text-gray-700">Conta PayPal (email)</label>
                                     <input type="email" name="paypal_email" placeholder="you@example.com" class="mt-1 block w-full border rounded p-2">
                                 </div>
-                            </div>
+                                </div>
                         </div>
                     </div>
 
