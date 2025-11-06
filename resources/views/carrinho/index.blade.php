@@ -15,7 +15,7 @@
             </a>
         </div>
     @else
-        <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
             <thead class="bg-red-700 text-white">
                 <tr>
                     <th class="py-3 px-4 text-left">Produto</th>
@@ -43,6 +43,21 @@
                 @endforeach
             </tbody>
         </table>
+        <div class="mt-4 flex items-center justify-between">
+            <div class="text-lg font-semibold">
+                @php
+                    $total = 0;
+                    foreach ($carrinho as $item) { $total += $item['preco'] * $item['quantidade']; }
+                @endphp
+                Total: €{{ number_format($total, 2, ',', '.') }}
+            </div>
+
+            <div>
+                <a href="{{ route('carrinho.checkout') }}" class="bg-primary text-white px-4 py-2 rounded hover:opacity-95">
+                    <i class="fa-solid fa-credit-card"></i> Avançar para compra
+                </a>
+            </div>
+        </div>
     @endif
 </div>
 @endsection

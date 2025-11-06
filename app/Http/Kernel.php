@@ -47,11 +47,11 @@ class Kernel extends HttpKernel
      * These can be used individually or assigned to groups.
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
+    'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'isAdmin' => \App\Http\Middleware\IsAdmin::class, 
+        'isAdmin' => \App\Http\Middleware\IsAdmin::class,
     ];
 
 }

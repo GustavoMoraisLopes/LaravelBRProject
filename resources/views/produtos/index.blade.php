@@ -17,6 +17,7 @@
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">{{ $produto->nome }}</h2>
                     <p class="text-gray-600 dark:text-gray-300 mb-2">{{ $produto->descricao ?? 'Sem descrição disponível.' }}</p>
                     <p class="text-red-700 font-bold mb-4">{{ number_format($produto->preco, 2, ',', '.') }} €</p>
+
                     <form action="{{ route('carrinho.adicionar', $produto) }}" method="POST">
                         @csrf
                         <button class="w-full bg-red-700 text-white font-semibold py-2 rounded hover:bg-red-800 transition">

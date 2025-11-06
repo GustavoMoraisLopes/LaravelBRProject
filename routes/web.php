@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BackofficeController;
+use App\Http\Controllers\BackOfficeController;
+use App\Http\Controllers\OrdersController;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,9 +19,14 @@ Route::get('/', function () {
 Route::get('/produtos', [ProdutoController::class, 'index'])->name('produtos.index');
 Route::get('/produtos/{produto}', [ProdutoController::class, 'show'])->name('produtos.show');
 
-Route::get('/carrinho', [CarrinhoController::class, 'index'])->name('carrinho.index');
-Route::post('/carrinho/adicionar/{produto}', [CarrinhoController::class, 'adicionar'])->name('carrinho.adicionar');
-Route::delete('/carrinho/remover/{id}', [CarrinhoController::class, 'remover'])->name('carrinho.remover');
+Route::middleware('auth')->group(function () {
+    Route::get('/carrinho', [CarrinhoController::class, 'index'])->name('carrinho.index');
+    Route::post('/carrinho/adicionar/{produto}', [CarrinhoController::class, 'adicionar'])->name('carrinho.adicionar');
+    Route::delete('/carrinho/remover/{id}', [CarrinhoController::class, 'remover'])->name('carrinho.remover');
+    // Checkout (fake, but realistic)
+    Route::get('/carrinho/checkout', [CarrinhoController::class, 'checkout'])->name('carrinho.checkout');
+    Route::post('/carrinho/checkout', [CarrinhoController::class, 'placeOrder'])->name('carrinho.checkout.place');
+});
 
 Route::get('/profile', function () {
     return view('profile.edit');
@@ -78,8 +84,11 @@ Route::post('/reset-password', function (Request $request) {
 })->middleware('guest')->name('password.update');
 
 Route::middleware(['auth', 'isAdmin'])->group(function () {
-    Route::get('/backoffice', [BackofficeController::class, 'index'])->name('backoffice');
-    Route::get('/backoffice/create', [BackofficeController::class, 'create'])->name('backoffice.create');
-    Route::post('/backoffice/store', [BackofficeController::class, 'store'])->name('backoffice.store');
-    Route::delete('/produtos/{produto}', [BackofficeController::class, 'destroy'])->name('produtos.destroy');
+    Route::get('/backoffice', [BackOfficeController::class, 'index'])->name('backoffice');
+    Route::get('/backoffice/create', [BackOfficeController::class, 'create'])->name('backoffice.create');
+    Route::post('/backoffice/store', [BackOfficeController::class, 'store'])->name('backoffice.store');
+    Route::delete('/produtos/{produto}', [BackOfficeController::class, 'destroy'])->name('produtos.destroy');
 });
+
+// Orders (history)
+Route::get('/orders', [OrdersController::class, 'index'])->middleware('auth')->name('orders.index');

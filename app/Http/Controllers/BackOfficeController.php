@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Produto;
 use App\Models\User;
 
-class BackofficeController extends Controller
+class BackOfficeController extends Controller
 {
     public function __construct()
     {
