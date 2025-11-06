@@ -22,8 +22,13 @@
                 @elseif(isset($payment) && $payment['method'] === 'multibanco')
                     Multibanco — Entidade: <span class="font-mono">{{ $payment['entidade'] }}</span> Referência: <span class="font-mono">{{ $payment['referencia'] }}</span>
                     <div class="text-sm text-gray-600">Validade até: {{ $payment['valid_until'] }}</div>
+                @endif
+
+                @if(!empty($db_error))
+                    <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded">
+                        Não foi possível guardar a encomenda na base de dados (modo de demonstração). Os detalhes de pagamento acima foram gerados, por favor guarda-os.
+                    </div>
                 @else
-                    —
                 @endif
             </div>
         </div>

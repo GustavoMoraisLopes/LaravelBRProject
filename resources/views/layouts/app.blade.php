@@ -32,6 +32,15 @@
 
 <body class="font-[Figtree] bg-gray-100 dark:bg-gray-900 flex flex-col min-h-screen transition-colors duration-300">
     <!-- NAVBAR -->
+    @php
+        $__carrinho = session('carrinho', []);
+        $__cartCount = 0;
+        if (!empty($__carrinho) && is_array($__carrinho)) {
+            foreach ($__carrinho as $__it) {
+                $__cartCount += intval($__it['quantidade'] ?? 0);
+            }
+        }
+    @endphp
     <nav class="bg-primary dark:bg-gray-800 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -48,6 +57,9 @@
                     </a>
                     <a href="{{ route('carrinho.index') }}" class="hover:text-secondary transition relative">
                         <i class="fa-solid fa-cart-shopping"></i>
+                        @if($__cartCount > 0)
+                            <span class="absolute -top-2 -right-2 bg-secondary text-black text-xs font-semibold px-2 py-0.5 rounded-full">{{ $__cartCount }}</span>
+                        @endif
                     </a>
 
                     <!-- Toggle Dark Mode - Desktop -->
@@ -108,6 +120,9 @@
                 </a>
                 <a href="{{ route('carrinho.index') }}" class="hover:text-secondary transition">
                     <i class="fa-solid fa-cart-shopping"></i> Carrinho
+                    @if($__cartCount > 0)
+                        <span class="ml-2 inline-block bg-secondary text-black text-xs font-semibold px-2 py-0.5 rounded-full">{{ $__cartCount }}</span>
+                    @endif
                 </a>
 
                 @auth

@@ -26,6 +26,10 @@ Route::middleware('auth')->group(function () {
     // Checkout (fake, but realistic)
     Route::get('/carrinho/checkout', [CarrinhoController::class, 'checkout'])->name('carrinho.checkout');
     Route::post('/carrinho/checkout', [CarrinhoController::class, 'placeOrder'])->name('carrinho.checkout.place');
+    // Multibanco instructions page (requires signed URL so the page can't be accessed by guessing the id)
+    Route::get('/carrinho/multibanco/{order}', [CarrinhoController::class, 'multibancoInstructions'])
+        ->middleware('signed')
+        ->name('carrinho.multibanco');
 });
 
 Route::get('/profile', function () {

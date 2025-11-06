@@ -7,7 +7,7 @@
     </h1>
 
     @if(empty($carrinho))
-        <div class="bg-white p-8 rounded-lg shadow text-center">
+        <div class="bg-white p-8 rounded-lg shadow text-center dark:bg-gray-800 dark:text-gray-100">
             <i class="fa-solid fa-cart-shopping text-6xl text-gray-300 mb-4"></i>
             <p class="text-gray-600 text-lg">Ainda não adicionaste nada ao carrinho.</p>
             <a href="{{ route('produtos.index') }}" class="inline-block mt-4 bg-red-700 text-white px-6 py-2 rounded hover:bg-red-800 transition">
@@ -15,7 +15,7 @@
             </a>
         </div>
     @else
-    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden dark:bg-gray-800 dark:text-gray-100">
             <thead class="bg-red-700 text-white">
                 <tr>
                     <th class="py-3 px-4 text-left">Produto</th>
@@ -26,7 +26,7 @@
             </thead>
             <tbody>
                 @foreach($carrinho as $id => $item)
-                    <tr class="border-b hover:bg-gray-50 transition">
+                    <tr class="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         <td class="py-3 px-4">{{ $item['nome'] }}</td>
                         <td class="py-3 px-4 text-center">{{ $item['quantidade'] }}</td>
                         <td class="py-3 px-4 text-center">{{ number_format($item['preco'], 2, ',', '.') }} €</td>
