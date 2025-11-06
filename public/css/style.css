@@ -212,3 +212,76 @@ body {
     color: #0c5460;
     border-left: 4px solid #17a2b8;
 }
+
+/* Checkout payment row & custom radio styles */
+.payment-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    transition: all 0.18s ease;
+}
+
+.payment-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.payment-row.selected {
+    border-color: rgba(124,58,237,0.18);
+    background: linear-gradient(180deg, #fbf8ff 0%, #ffffff 100%);
+    box-shadow: 0 8px 28px rgba(99,102,241,0.06);
+}
+
+/* radio style (subtle outline) */
+.payment-row input[type="radio"] {
+    /* keep the native input for accessibility, but hide its visual chrome */
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    margin: 0 0 0 8px;
+    background: transparent;
+    border: none;
+    opacity: 0; /* invisible but still focusable/clickable */
+    cursor: pointer;
+    flex: 0 0 auto;
+    position: relative;
+}
+
+/* ensure native focus remains visible for keyboard users */
+.payment-row input[type="radio"]:focus {
+    outline: 2px solid rgba(124,58,237,0.12);
+    outline-offset: 3px;
+}
+
+/* Place radio near the right, but show a check badge on selected */
+.payment-row > input[type="radio"]{ order: 2; }
+.payment-row > .check-badge{ display:none; order: 3; }
+.payment-row.selected > .check-badge{ display:flex; }
+
+.check-badge{
+    width: 30px;
+    height: 30px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg,#6d28d9,#8b5cf6);
+    color: white;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(59,130,246,0.12);
+}
+
+/* Inline payment block: animated reveal */
+.payment-inline{
+    margin-left: 8px;
+    overflow: hidden;
+    transition: max-height .25s ease, opacity .22s ease, transform .22s ease;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-6px);
+}
+.payment-row.selected + .payment-inline{
+    max-height: 400px; /* large enough to show fields */
+    opacity: 1;
+    transform: translateY(0);
+}

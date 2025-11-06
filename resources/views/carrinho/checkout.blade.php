@@ -48,6 +48,7 @@
                             document.addEventListener('DOMContentLoaded', function(){
                                 const rows = document.querySelectorAll('#payment-list .payment-row');
                                 const extras = document.querySelectorAll('.payment-inline');
+                                const hidden = document.getElementById('payment_method_input');
 
                                 function selectValue(val){
                                     rows.forEach(r=>{
@@ -55,9 +56,11 @@
                                         const input = r.querySelector('input[type=radio]');
                                         if(v === val){
                                             r.classList.add('selected');
+                                            r.setAttribute('aria-pressed', 'true');
                                             if(input) input.checked = true;
                                         } else {
                                             r.classList.remove('selected');
+                                            r.setAttribute('aria-pressed', 'false');
                                             if(input) input.checked = false;
                                         }
                                     });
@@ -66,15 +69,25 @@
                                             e.style.display = (e.dataset.for === val) ? '' : 'none';
                                         });
 
+                                        // update the hidden input so the server receives the selected method
+                                        if(hidden) hidden.value = val;
+
                                         // no special generation for multibanco now; it uses card fields per request
                                 }
 
                                 rows.forEach(r=>{
+                                    // make rows keyboard-focusable for accessibility
+                                    r.setAttribute('tabindex', '0');
+                                    r.setAttribute('role', 'button');
+                                    r.setAttribute('aria-pressed', 'false');
+
                                     r.addEventListener('click', ()=> selectValue(r.dataset.value));
-                                    const input = r.querySelector('input[type=radio]');
-                                    if(input){
-                                        input.addEventListener('change', ()=> selectValue(input.value));
-                                    }
+                                    r.addEventListener('keydown', (e)=>{
+                                        if(e.key === 'Enter' || e.key === ' '){
+                                            e.preventDefault();
+                                            selectValue(r.dataset.value);
+                                        }
+                                    });
                                 });
 
                                 // initialize from any checked radio or default to first
@@ -100,6 +113,7 @@
                         <div class="bg-white rounded-lg p-4 shadow-sm">
                             <div class="text-lg font-semibold mb-3">Select a payment method</div>
 
+                            <input type="hidden" name="payment_method" id="payment_method_input" value="{{ old('payment_method', 'multibanco') }}">
                             <div id="payment-list" class="space-y-3">
                                 <!-- Multibanco -->
                                 <label class="payment-row relative flex items-center justify-between gap-4 p-3 border rounded cursor-pointer bg-white" data-value="multibanco">
@@ -107,7 +121,7 @@
                                         <img src="{{ asset('images/payments/multibanco.svg') }}" alt="Multibanco" class="w-10 h-6" />
                                         <div class="font-medium">Multibanco</div>
                                     </div>
-                                    <input type="radio" name="payment_method" value="multibanco" class="form-radio h-4 w-4 text-indigo-600" {{ old('payment_method') == 'multibanco' ? 'checked' : '' }}>
+                                    {{-- radio removed; using hidden input updated by JS --}}
                                     <span class="check-badge hidden w-7 h-7 rounded-full flex items-center justify-center bg-indigo-600 text-white">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
@@ -128,7 +142,7 @@
                                         <img src="{{ asset('images/payments/mbway.svg') }}" alt="MB WAY" class="w-10 h-6" />
                                         <div class="font-medium">MB WAY</div>
                                     </div>
-                                    <input type="radio" name="payment_method" value="mbway" class="form-radio h-4 w-4 text-indigo-600" {{ old('payment_method') == 'mbway' ? 'checked' : '' }}>
+                                    {{-- radio removed; using hidden input updated by JS --}}
                                     <span class="check-badge hidden w-7 h-7 rounded-full flex items-center justify-center bg-indigo-600 text-white">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
@@ -146,7 +160,7 @@
                                         <img src="{{ asset('images/payments/paysafecard.svg') }}" alt="Paysafecard" class="w-10 h-6" />
                                         <div class="font-medium">Paysafecard</div>
                                     </div>
-                                    <input type="radio" name="payment_method" value="paysafecard" class="form-radio h-4 w-4 text-indigo-600" {{ old('payment_method') == 'paysafecard' ? 'checked' : '' }}>
+                                    {{-- radio removed; using hidden input updated by JS --}}
                                     <span class="check-badge hidden w-7 h-7 rounded-full flex items-center justify-center bg-indigo-600 text-white">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
@@ -163,7 +177,7 @@
                                         <img src="{{ asset('images/payments/paypal.svg') }}" alt="PayPal" class="w-10 h-6" />
                                         <div class="font-medium">PayPal</div>
                                     </div>
-                                    <input type="radio" name="payment_method" value="paypal" class="form-radio h-4 w-4 text-indigo-600" {{ old('payment_method') == 'paypal' ? 'checked' : '' }}>
+                                    {{-- radio removed; using hidden input updated by JS --}}
                                     <span class="check-badge hidden w-7 h-7 rounded-full flex items-center justify-center bg-indigo-600 text-white">
                                         <i class="fa-solid fa-check"></i>
                                     </span>
