@@ -13,12 +13,32 @@
         <div class="mb-4">
             <strong>Método de pagamento:</strong>
             <div class="mt-2">
+                @php
+                    $__statusMap = [
+                        'paid' => 'Pago',
+                        'pending' => 'Pendente',
+                        'failed' => 'Falhado',
+                        'processing' => 'A processar',
+                        'cancelled' => 'Cancelado',
+                    ];
+                    $statusLabel = null;
+                    if(!empty($payment['status'])) {
+                        $statusLabel = $__statusMap[strtolower($payment['status'])] ?? ucfirst($payment['status']);
+                    }
+                @endphp
+
                 @if(isset($payment) && $payment['method'] === 'cartao')
                     Cartão de Crédito — <span class="font-mono">{{ $payment['masked'] ?? '****' }}</span>
-                    <div class="text-sm text-gray-600">Pagamento processado (id: {{ $payment['processor_id'] ?? '—' }}).</div>
+                    <div class="text-sm text-gray-600">Pagamento processado. Referência: <span class="font-mono">{{ $payment['processor_id'] ?? '—' }}</span></div>
                 @elseif(isset($payment) && $payment['method'] === 'mbway')
                     MB WAY — número: <span class="font-mono">{{ $payment['mbway_phone'] ?? '—' }}</span>
-                    <div class="text-sm text-gray-600">Transacção: {{ $payment['mbway_tx'] ?? '—' }} (estado: {{ $payment['status'] }})</div>
+                    <div class="text-sm text-gray-600">Transacção: <span class="font-mono">{{ $payment['mbway_tx'] ?? '—' }}</span>@if($statusLabel) — Estado: {{ $statusLabel }}@endif</div>
+                @elseif(isset($payment) && $payment['method'] === 'paypal')
+                    PayPal — conta: <span class="font-mono">{{ $payment['paypal_email'] ?? '—' }}</span>
+                    <div class="text-sm text-gray-600">Transacção: <span class="font-mono">{{ $payment['paypal_tx'] ?? ($payment['transaction_id'] ?? '—') }}</span>@if($statusLabel) — Estado: {{ $statusLabel }}@endif</div>
+                @elseif(isset($payment) && $payment['method'] === 'paysafecard')
+                    Paysafecard — email: <span class="font-mono">{{ $payment['paysafecard_email'] ?? '—' }}</span>
+                    <div class="text-sm text-gray-600">Transacção: <span class="font-mono">{{ $payment['paysafecard_tx'] ?? ($payment['transaction_id'] ?? '—') }}</span>@if($statusLabel) — Estado: {{ $statusLabel }}@endif</div>
                 @elseif(isset($payment) && $payment['method'] === 'multibanco')
                     Multibanco — Entidade: <span class="font-mono">{{ $payment['entidade'] }}</span> Referência: <span class="font-mono">{{ $payment['referencia'] }}</span>
                     <div class="text-sm text-gray-600">Validade até: {{ $payment['valid_until'] }}</div>

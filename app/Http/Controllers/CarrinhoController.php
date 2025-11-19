@@ -191,11 +191,8 @@ class CarrinhoController extends Controller
                 }
             });
         } catch (\Throwable $e) {
-            // Log the error and show a graceful confirmation page (DB not available)
             Log::error('Order save failed: ' . $e->getMessage(), ['exception' => $e]);
 
-            // Do not clear the cart automatically if DB failed — but we still show the payment info so user can proceed.
-            // Provide the confirmation view with a db_error flag so the UI can communicate clearly.
             return view('carrinho.confirmation', [
                 'orderId' => $orderId,
                 'total' => $total,
@@ -210,14 +207,15 @@ class CarrinhoController extends Controller
         // Limpar carrinho
         $request->session()->forget('carrinho');
 
-        // Se for Multibanco, redireccionar para a página de instruções (entidade + referência)
-        // Use a temporary signed URL so the page cannot be accessed by guessing the order ID.
         if ($paymentMethod === 'multibanco') {
-            // expires in 60 minutes
-            return redirect()->temporarySignedRoute('carrinho.multibanco', now()->addMinutes(60), ['order' => $savedOrder->id]);
+            return redirect()->route('carrinho.multibanco', ['order' => $savedOrder->id]);
         }
 
-        // Passar dados para a view de confirmação (outros métodos)
+
+        if (in_array($paymentMethod, ['mbway', 'paypal', 'paysafecard'])) {
+            return redirect()->route('carrinho.wait', ['order' => $savedOrder->id]);
+        }
+
         return view('carrinho.confirmation', [
             'orderId' => $orderId,
             'total' => $total,
@@ -228,10 +226,8 @@ class CarrinhoController extends Controller
         ]);
     }
 
-    // Mostrar página com instruções Multibanco (entidade + referência)
     public function multibancoInstructions(Order $order)
     {
-        // Route is protected by signed middleware; we rely on route model binding to fetch the Order.
         if (!$order) {
             return redirect()->route('produtos.index')->with('error', 'Encomenda não encontrada.');
         }
@@ -242,5 +238,59 @@ class CarrinhoController extends Controller
             'order' => $order,
             'payment' => $payment,
         ]);
+    }
+
+    public function waitForPayment(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            return redirect()->route('produtos.index')->with('error', 'Encomenda não encontrada.');
+        }
+
+        return view('carrinho.waiting', [
+            'order' => $order,
+            'payment' => $order->payment ?? [],
+        ]);
+    }
+
+
+    public function showConfirmation(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            return redirect()->route('produtos.index')->with('error', 'Encomenda não encontrada.');
+        }
+
+        $items = $order->items()->get()->mapWithKeys(function($it){
+            return [$it->produto_id => [
+                'nome' => $it->nome,
+                'preco' => $it->preco,
+                'quantidade' => $it->quantidade,
+            ]];
+        })->toArray();
+
+        return view('carrinho.confirmation', [
+            'orderId' => $order->order_number,
+            'total' => $order->total,
+            'items' => $items,
+            'billing' => $order->billing ?? [],
+            'payment' => $order->payment ?? [],
+            'savedOrder' => $order,
+        ]);
+    }
+
+    public function confirmPayment(Order $order, Request $request)
+    {
+        if ($order->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Encomenda não encontrada.'], 403);
+        }
+
+        $order->status = 'paid';
+        $payment = $order->payment ?? [];
+        $payment['status'] = 'paid';
+        $order->payment = $payment;
+        $order->save();
+
+        $redirect = route('carrinho.confirmation', ['order' => $order->id]);
+
+        return response()->json(['redirect' => $redirect]);
     }
 }

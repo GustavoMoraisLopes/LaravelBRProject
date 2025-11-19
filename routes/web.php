@@ -26,8 +26,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/carrinho/checkout', [CarrinhoController::class, 'checkout'])->name('carrinho.checkout');
     Route::post('/carrinho/checkout', [CarrinhoController::class, 'placeOrder'])->name('carrinho.checkout.place');
     Route::get('/carrinho/multibanco/{order}', [CarrinhoController::class, 'multibancoInstructions'])
-        ->middleware('signed')
         ->name('carrinho.multibanco');
+    Route::get('/carrinho/wait/{order}', [CarrinhoController::class, 'waitForPayment'])
+        ->name('carrinho.wait');
+    Route::post('/carrinho/confirm/{order}', [CarrinhoController::class, 'confirmPayment'])->name('carrinho.confirm.post');
+    Route::get('/carrinho/confirmation/{order}', [CarrinhoController::class, 'showConfirmation'])->name('carrinho.confirmation');
 });
 
 Route::get('/profile', function () {

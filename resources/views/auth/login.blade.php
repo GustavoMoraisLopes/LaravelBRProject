@@ -24,6 +24,17 @@
             <h2 class="text-2xl font-semibold text-[#b41f1f]">Login</h2>
         </div>
 
+        @if($errors->any())
+            <div class="bg-red-50 border border-red-200 text-red-800 p-3 mb-4 rounded">
+                <div class="font-semibold">Erro de autenticação</div>
+                <ul class="list-disc pl-5 mt-2 text-sm">
+                    @foreach($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         @if(session('info'))
             <div class="bg-yellow-100 border-l-4 border-yellow-400 text-yellow-800 p-3 mb-4 rounded">
                 {{ session('info') }}
@@ -46,9 +57,13 @@
                 name="email"
                 id="email"
                 placeholder="o-teu-email@exemplo.com"
+                value="{{ old('email') }}"
                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-transparent"
                 required
             >
+            @error('email')
+                <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-4">
@@ -63,6 +78,9 @@
                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-transparent"
                 required
             >
+            @error('password')
+                <div class="text-sm text-red-600 mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-6 text-right">
