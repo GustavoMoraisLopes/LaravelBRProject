@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderCreatedMail;
 
 class CarrinhoController extends Controller
 {
@@ -214,6 +216,17 @@ class CarrinhoController extends Controller
 
         if (in_array($paymentMethod, ['mbway', 'paypal', 'paysafecard'])) {
             return redirect()->route('carrinho.wait', ['order' => $savedOrder->id]);
+        }
+
+        // Send order confirmation email (best-effort)
+        try {
+            $itemsForEmail = $carrinho;
+            $to = $savedOrder->billing['email'] ?? Auth::user()->email ?? null;
+            if ($to) {
+                Mail::to($to)->send(new OrderCreatedMail($savedOrder, $itemsForEmail));
+            }
+        } catch (\Throwable $e) {
+            // don't block the flow on email errors
         }
 
         return view('carrinho.confirmation', [

@@ -1,3 +1,20 @@
+@component('mail::message')
+# Recuperação de Password
+
+Olá,
+
+Recebemos um pedido para repor a password da tua conta na **Tuguinha**. Clica no botão abaixo para continuar:
+
+@component('mail::button', ['url' => $url])
+Repor Password
+@endcomponent
+
+Se não pediste esta alteração, ignora este email.
+
+Obrigado,
+
+Equipa Tuguinha
+@endcomponent
 <!DOCTYPE html>
 <html lang="pt">
 <head>

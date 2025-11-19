@@ -58,7 +58,7 @@
                 id="email"
                 placeholder="o-teu-email@exemplo.com"
                 value="{{ old('email') }}"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-transparent"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-transparent {{ $errors->has('email') ? 'ring-2 ring-red-500' : '' }}"
                 required
             >
             @error('email')
@@ -75,7 +75,7 @@
                 name="password"
                 id="password"
                 placeholder="••••••••"
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-transparent"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-transparent {{ $errors->has('password') ? 'ring-2 ring-red-500' : '' }}"
                 required
             >
             @error('password')
@@ -102,3 +102,29 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        // Focus and animate the first invalid input if present
+        try {
+            const invalid = document.querySelector('.ring-2.ring-red-500');
+            if(invalid){
+                invalid.focus();
+                invalid.classList.add('animate-shake');
+                setTimeout(()=> invalid.classList.remove('animate-shake'), 600);
+            }
+        } catch(e){}
+    });
+</script>
+<style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        50% { transform: translateX(4px); }
+        75% { transform: translateX(-4px); }
+        100% { transform: translateX(0); }
+    }
+    .animate-shake { animation: shake 0.6s ease-in-out; }
+</style>
+@endpush

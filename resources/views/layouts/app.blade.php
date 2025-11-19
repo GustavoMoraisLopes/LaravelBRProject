@@ -228,5 +228,6 @@
         themeToggle.addEventListener('change', toggleTheme);
         themeToggleMobile.addEventListener('change', toggleTheme);
     </script>
+    @stack('scripts')
 </body>
 </html>
